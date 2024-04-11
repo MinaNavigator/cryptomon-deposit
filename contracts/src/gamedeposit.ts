@@ -51,6 +51,7 @@ export class GameDeposit extends SmartContract {
     });
   }
 
+  /** Owner right to update owner or contract address receiver */
   @method async setOwner(newOwner: PublicKey) {
     // define owner of the contract to update info like owner and contract address
     const actualOwner = this.Owner.getAndRequireEquals();
@@ -64,6 +65,7 @@ export class GameDeposit extends SmartContract {
     this.Owner.set(newOwner);
   }
 
+  /** Define the address who will receive the funds */
   @method async setContractAddress(contractAddress: PublicKey) {
     const actualOwner = this.Owner.getAndRequireEquals();
     // don't set is the owner is not defined
@@ -72,6 +74,7 @@ export class GameDeposit extends SmartContract {
     this.GameContract.set(contractAddress);
   }
 
+  /** Deposit mina to the contract address, the event will be use to get amount deposited from the game */
   @method async deposit(amount: UInt64) {
     // can't deposit 0
     amount.greaterThan(UInt64.zero).assertTrue();
