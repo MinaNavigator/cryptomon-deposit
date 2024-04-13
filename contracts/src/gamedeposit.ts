@@ -15,15 +15,17 @@ import {
 } from 'o1js';
 
 export class DepositData extends Struct({
+  id: UInt64,
   user: PublicKey,
   amount: UInt64,
 }) {
-  constructor(value: { user: PublicKey; amount: UInt64 }) {
+  constructor(value: { id: UInt64, user: PublicKey; amount: UInt64 }) {
     super(value);
   }
 
   hash(): Field {
     return Poseidon.hash([
+      new Field(this.id.value),
       this.user.x,
       this.user.isOdd.toField(),
       new Field(this.amount.value),
@@ -37,6 +39,7 @@ export class DepositData extends Struct({
 export class GameDeposit extends SmartContract {
   @state(PublicKey) GameContract = State<PublicKey>();
   @state(PublicKey) Owner = State<PublicKey>();
+  @state(UInt64) CurrentId = State<UInt64>();
 
   events = {
     deposit: DepositData,
@@ -86,8 +89,13 @@ export class GameDeposit extends SmartContract {
     contractAddress.isEmpty().assertFalse();
     senderUpdate.send({ to: contractAddress, amount });
 
+    const actualId = this.CurrentId.getAndRequireEquals();
+    const newId = actualId.add(1);
+
     // emit a event to retrieve deposit
-    const data = new DepositData({ user: senderPublicKey, amount });
+    const data = new DepositData({ id: newId, user: senderPublicKey, amount });
+    this.CurrentId.set(newId);
+
     this.emitEvent('deposit', data);
   }
 }
