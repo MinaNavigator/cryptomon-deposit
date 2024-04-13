@@ -15,15 +15,17 @@ import {
 } from 'o1js';
 
 export class WithdrawData extends Struct({
+  id: UInt64,
   receiver: PublicKey,
   amount: UInt64,
 }) {
-  constructor(value: { receiver: PublicKey; amount: UInt64 }) {
+  constructor(value: { id: UInt64, receiver: PublicKey; amount: UInt64 }) {
     super(value);
   }
 
   hash(): Field {
     return Poseidon.hash([
+      new Field(this.id.value),
       this.receiver.x,
       this.receiver.isOdd.toField(),
       new Field(this.amount.value),
@@ -36,6 +38,7 @@ export class WithdrawData extends Struct({
  */
 export class GameContract extends SmartContract {
   @state(PublicKey) Owner = State<PublicKey>();
+  @state(UInt64) CurrentId = State<UInt64>();
 
   events = {
     withdraw: WithdrawData,
@@ -83,8 +86,13 @@ export class GameContract extends SmartContract {
 
     this.send({ to: receiver, amount });
 
+    const actualId = this.CurrentId.getAndRequireEquals();
+    const newId = actualId.add(1);
+
     // emit a event to retrieve withdraw
-    const data = new WithdrawData({ receiver, amount });
+    const data = new WithdrawData({ id: newId, receiver, amount });
+    this.CurrentId.set(newId);
+
     this.emitEvent('withdraw', data);
   }
 }
