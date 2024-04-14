@@ -65,4 +65,22 @@ describe('Game', () => {
     expect(num2).toEqual(zero);
   });
 
+  it('define owner', async () => {
+    await localDeploy();
+
+    const oldOwner = zkAppGameDeposit.Owner.get();
+    expect(oldOwner).toEqual(PublicKey.empty());
+    const txn = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameContract.setOwner(deployerAccount);
+      zkAppGameContract.requireSignature();
+    });
+    await txn.prove();
+    await txn.sign([deployerKey, zkAppGameContractPrivateKey]).send();
+
+    console.log("account empty", PublicKey.empty());
+    const newOwner = zkAppGameDeposit.Owner.getAndRequireEquals();
+    expect(newOwner).toEqual(deployerAccount);
+  });
+
+
 });
