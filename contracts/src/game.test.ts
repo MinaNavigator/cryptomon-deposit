@@ -65,10 +65,10 @@ describe('Game', () => {
     expect(num2).toEqual(zero);
   });
 
-  it('define owner', async () => {
+  it('define owner game contract', async () => {
     await localDeploy();
 
-    const oldOwner = zkAppGameDeposit.Owner.get();
+    const oldOwner = zkAppGameContract.Owner.get();
     expect(oldOwner).toEqual(PublicKey.empty());
     const txn = await Mina.transaction(deployerAccount, async () => {
       zkAppGameContract.setOwner(deployerAccount);
@@ -77,10 +77,47 @@ describe('Game', () => {
     await txn.prove();
     await txn.sign([deployerKey, zkAppGameContractPrivateKey]).send();
 
-    console.log("account empty", PublicKey.empty());
+    const newOwner = zkAppGameContract.Owner.getAndRequireEquals();
+    expect(newOwner).toEqual(deployerAccount);
+  });
+
+  it('define owner game deposit', async () => {
+    await localDeploy();
+
+    const oldOwner = zkAppGameDeposit.Owner.get();
+    expect(oldOwner).toEqual(PublicKey.empty());
+    const txn = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setOwner(deployerAccount);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn.prove();
+    await txn.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
     const newOwner = zkAppGameDeposit.Owner.getAndRequireEquals();
     expect(newOwner).toEqual(deployerAccount);
   });
 
+  it('define game contract for game deposit', async () => {
+    await localDeploy();
 
+    const gameContract = zkAppGameDeposit.GameContract.get();
+    expect(gameContract).toEqual(PublicKey.empty());
+
+    let txn = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setOwner(deployerAccount);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn.prove();
+    await txn.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const txn2 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn2.prove();
+    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const newGameContract = zkAppGameDeposit.GameContract.getAndRequireEquals();
+    expect(newGameContract).toEqual(zkAppGameContractAddress);
+  });
 });
