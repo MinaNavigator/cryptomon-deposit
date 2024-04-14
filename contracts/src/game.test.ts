@@ -1,6 +1,6 @@
 import { GameDeposit, DepositData } from './gamedeposit.js';
 import { GameContract, WithdrawData } from './gamecontract.js';
-import { Field, Mina, PrivateKey, PublicKey, AccountUpdate, UInt64 } from 'o1js';
+import { Field, Mina, PrivateKey, PublicKey, AccountUpdate, UInt64, Account, assert } from 'o1js';
 
 /*
  * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
@@ -119,5 +119,34 @@ describe('Game', () => {
 
     const newGameContract = zkAppGameDeposit.GameContract.getAndRequireEquals();
     expect(newGameContract).toEqual(zkAppGameContractAddress);
+  });
+
+  it('make a deposit', async () => {
+    await localDeploy();
+
+    let txn = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setOwner(deployerAccount);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn.prove();
+    await txn.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const txn2 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn2.prove();
+    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const mina = new UInt64(10 ** 9);
+    const txn3 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.deposit(mina);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn3.prove();
+    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const bal = zkAppGameContract.account.balance.get();
+    expect(bal).toEqual(mina);
   });
 });
