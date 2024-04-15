@@ -94,13 +94,7 @@ describe('Game', () => {
     expect(gameContract).toEqual(PublicKey.empty());
 
     await setGameDepositOwner();
-
-    const txn2 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
-      zkAppGameDeposit.requireSignature();
-    });
-    await txn2.prove();
-    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+    await setContractAddress();
 
     const newGameContract = zkAppGameDeposit.GameContract.getAndRequireEquals();
     expect(newGameContract).toEqual(zkAppGameContractAddress);
@@ -110,21 +104,10 @@ describe('Game', () => {
     await localDeploy();
 
     await setGameDepositOwner();
-
-    const txn2 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
-      zkAppGameDeposit.requireSignature();
-    });
-    await txn2.prove();
-    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+    await setContractAddress();
 
     const mina = new UInt64(10 ** 9);
-    const txn3 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.deposit(mina);
-      zkAppGameDeposit.requireSignature();
-    });
-    await txn3.prove();
-    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+    await deposit(mina);
 
     const bal = zkAppGameContract.account.balance.get();
     expect(bal).toEqual(mina);
@@ -135,22 +118,10 @@ describe('Game', () => {
 
     await setGameDepositOwner();
     await setGameContractOwner();
-
-    const txn2 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
-      zkAppGameDeposit.requireSignature();
-    });
-    await txn2.prove();
-    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+    await setContractAddress();
 
     const mina = new UInt64(10 ** 9);
-    const txn3 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.deposit(mina);
-      zkAppGameDeposit.requireSignature();
-    });
-    await txn3.prove();
-    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
-
+    await deposit(mina);
 
     const balanceBefore = Account(senderAccount).balance.get();
     const txn4 = await Mina.transaction(deployerAccount, async () => {
@@ -164,6 +135,24 @@ describe('Game', () => {
     // check if sender account receive 1 mina after withdraw
     const bal = balanceAfter.sub(balanceBefore);
     expect(bal).toEqual(mina);
+  });
+
+  it('make two deposit', async () => {
+    await localDeploy();
+
+    await setGameDepositOwner();
+
+    await setContractAddress();
+
+    const mina = new UInt64(10 ** 9);
+    await deposit(mina);
+    await deposit(mina.mul(5));
+
+    const bal = zkAppGameContract.account.balance.get();
+    expect(bal).toEqual(mina.mul(6));
+    // check if the id correctly increment
+    const currentId = zkAppGameDeposit.CurrentId.get()
+    expect(currentId).toEqual(new UInt64(2));
   });
 
   async function setGameDepositOwner() {
@@ -182,5 +171,23 @@ describe('Game', () => {
     });
     await txn.prove();
     await txn.sign([deployerKey, zkAppGameContractPrivateKey]).send();
+  }
+
+  async function setContractAddress() {
+    const txn2 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn2.prove();
+    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+  }
+
+  async function deposit(amount: UInt64) {
+    const txn3 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.deposit(amount);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn3.prove();
+    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
   }
 });
