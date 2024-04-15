@@ -154,7 +154,7 @@ describe('Game', () => {
 
     const balanceBefore = Account(senderAccount).balance.get();
     const txn4 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameContract.withdraw(mina, senderAccount);
+      zkAppGameContract.withdraw(mina, senderAccount, new UInt64(1));
       zkAppGameContract.requireSignature();
     });
     await txn4.prove();

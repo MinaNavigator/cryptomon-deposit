@@ -70,7 +70,7 @@ export class GameContract extends SmartContract {
 
 
   /** Deposit mina to the contract address, the event will be use to get amount deposited from the game */
-  @method async withdraw(amount: UInt64, receiver: PublicKey) {
+  @method async withdraw(amount: UInt64, receiver: PublicKey, id: UInt64) {
     // can't withdraw 0
     amount.greaterThan(UInt64.zero).assertTrue();
 
@@ -89,10 +89,11 @@ export class GameContract extends SmartContract {
 
     const actualId = this.CurrentId.getAndRequireEquals();
     const newId = actualId.add(1);
+    newId.assertEquals(id);
 
     // emit a event to retrieve withdraw
-    const data = new WithdrawData({ id: newId, receiver, amount });
-    this.CurrentId.set(newId);
+    const data = new WithdrawData({ id, receiver, amount });
+    this.CurrentId.set(id);
 
     this.emitEvent('withdraw', data);
   }
