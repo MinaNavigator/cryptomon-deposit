@@ -50,6 +50,7 @@ export class GameContract extends SmartContract {
     this.account.permissions.set({
       ...Permissions.default(),
       editState: Permissions.signature(),
+      send: Permissions.signature()
     });
   }
 

@@ -130,6 +130,42 @@ describe('Game', () => {
     expect(bal).toEqual(mina);
   });
 
+  it('make a withdraw', async () => {
+    await localDeploy();
+
+    await setGameDepositOwner();
+    await setGameContractOwner();
+
+    const txn2 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn2.prove();
+    await txn2.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+    const mina = new UInt64(10 ** 9);
+    const txn3 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameDeposit.deposit(mina);
+      zkAppGameDeposit.requireSignature();
+    });
+    await txn3.prove();
+    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
+
+
+    const balanceBefore = Account(senderAccount).balance.get();
+    const txn4 = await Mina.transaction(deployerAccount, async () => {
+      zkAppGameContract.withdraw(mina, senderAccount);
+      zkAppGameContract.requireSignature();
+    });
+    await txn4.prove();
+    await txn4.sign([deployerKey, senderKey, zkAppGameContractPrivateKey]).send();
+    const balanceAfter = Account(senderAccount).balance.get();
+
+    // check if sender account receive 1 mina after withdraw
+    const bal = balanceAfter.sub(balanceBefore);
+    expect(bal).toEqual(mina);
+  });
+
   async function setGameDepositOwner() {
     const txn = await Mina.transaction(deployerAccount, async () => {
       zkAppGameDeposit.setOwner(deployerAccount);
