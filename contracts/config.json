@@ -1,4 +1,14 @@
 {
   "version": 1,
-  "deployAliases": {}
+  "deployAliases": {
+    "game": {
+      "networkId": "testnet",
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/game.json",
+      "feepayerKeyPath": "C:\\Users\\Eddy/.cache/zkapp-cli/keys/eddy.json",
+      "feepayerAlias": "eddy",
+      "fee": "0.1",
+      "smartContract": "GameContract"
+    }
+  }
 }

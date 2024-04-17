@@ -24,3 +24,6 @@ npm run coverage
 ## License
 
 [Apache-2.0](LICENSE)
+
+
+Game contract address : B62qmUqJBynGN9mazSN9AnikiiHLDKut7hM7Ba143eyWbrAXdkK8jb4
