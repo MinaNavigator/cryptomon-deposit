@@ -1,29 +1,30 @@
 
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
 
 export default function Home() {
+  const [amount, setAmount] = useState(0);
   useEffect(() => {
     (async () => {
       const { Mina, PublicKey } = await import('o1js');
-      const { Add } = await import('../../../contracts/build/src/');
+      const { Add, GameDeposit } = await import('../../../contracts/build/src/');
 
       // Update this to use the address (public key) for your zkApp account.
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
       // Testnet B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA.
-      const zkAppAddress = '';
+      const zkAppAddress = 'B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA';
       // This should be removed once the zkAppAddress is updated.
       if (!zkAppAddress) {
         console.error(
           'The following error is caused because the zkAppAddress has an empty string as the public key. Update the zkAppAddress with the public key for your zkApp account, or try this address for an example "Add" smart contract that we deployed to Testnet: B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA'
         );
       }
-      //const zkApp = new Add(PublicKey.fromBase58(zkAppAddress))
+      const zkApp = new GameDeposit()
     })();
   }, []);
 
@@ -55,6 +56,10 @@ export default function Home() {
               built with
               <code className={styles.code}> o1js</code>
             </p>
+          </div>
+          <div>
+            <h4>Amount of mina to deposit to cryptomon game</h4>
+            <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
           </div>
           <p className={styles.start}>
             Get started by editing
