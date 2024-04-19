@@ -7,10 +7,10 @@ import styles from '../styles/Home.module.css';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
 import { GameDeposit } from '../../../contracts/build/src/gamedeposit.js';
-import { UInt64 } from 'o1js';
+import { Mina, UInt64 } from 'o1js';
 
 export default function Home() {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(10);
   const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
   useEffect(() => {
     (async () => {
@@ -27,14 +27,43 @@ export default function Home() {
           'The following error is caused because the zkAppAddress has an empty string as the public key. Update the zkAppAddress with the public key for your zkApp account, or try this address for an example "Add" smart contract that we deployed to Testnet: B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA'
         );
       }
+      await window?.mina?.requestAccounts();
+
       const zkLoad = new GameDeposit(PublicKey.fromBase58(zkAppAddress));
       setZkApp(zkLoad);
+
+
     })();
   }, []);
 
   const deposit = async () => {
-    let amountMina = amount * 10 ** 9;
-    zkApp?.deposit(new UInt64(amountMina));
+    try {
+      // This is the public key of the deployed zkapp you want to interact with.
+      const zkAppAddress = 'B62qq8sm7JdsED6VuDKNWKLAi1Tvz1jrnffuud5gXMq3mgtd';
+      let accounts = await window.mina?.getAccounts();
+      console.log("accounts", accounts);
+      let sender: Mina.FeePayerSpec = { sender: accounts[0] };
+      let amountMina = amount * 10 ** 9;
+      const tx = await Mina.transaction(sender, async () => {
+        await zkApp?.deposit(new UInt64(amountMina));
+      });
+      console.log("tx", tx);
+
+      await tx.prove();
+
+      const { hash } = await window?.mina?.sendTransaction({
+        transaction: tx.toJSON(),
+        feePayer: {
+          fee: '',
+          memo: 'zk',
+        },
+      });
+
+      console.log(hash);
+    } catch (err) {
+      // You may want to show the error message in your UI to the user if the transaction fails.
+      console.log(err?.message);
+    }
   }
 
   return (
@@ -69,6 +98,7 @@ export default function Home() {
           <div>
             <h4>Amount of mina to deposit to cryptomon game</h4>
             <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
+            <button onClick={deposit}>Deposit</button>
           </div>
           <p className={styles.start}>
             Get started by editing
