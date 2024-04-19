@@ -44,8 +44,10 @@ export default function Home() {
       console.log("accounts", accounts);
       let sender: Mina.FeePayerSpec = { sender: accounts[0] };
       let amountMina = amount * 10 ** 9;
+      console.log("amount", amount);
       const tx = await Mina.transaction(sender, async () => {
-        await zkApp?.deposit(new UInt64(amountMina));
+        zkApp?.deposit(new UInt64(amountMina));
+        zkApp?.requireSignature();
       });
       console.log("tx", tx);
 
