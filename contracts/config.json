@@ -3,12 +3,21 @@
   "deployAliases": {
     "game": {
       "networkId": "testnet",
-      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "url": "https://proxy.devnet.minaexplorer.com/graphql",
       "keyPath": "keys/game.json",
       "feepayerKeyPath": "C:\\Users\\Eddy/.cache/zkapp-cli/keys/eddy.json",
       "feepayerAlias": "eddy",
       "fee": "0.1",
       "smartContract": "GameContract"
+    },
+    "deposit": {
+      "networkId": "testnet",
+      "url": "https://proxy.devnet.minaexplorer.com/graphql",
+      "keyPath": "keys/deposit.json",
+      "feepayerKeyPath": "C:\\Users\\Eddy/.cache/zkapp-cli/keys/eddy.json",
+      "feepayerAlias": "eddy",
+      "fee": "0.1",
+      "smartContract": "GameDeposit"
     }
   }
 }

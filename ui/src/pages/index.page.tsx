@@ -6,9 +6,12 @@ import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
+import { GameDeposit } from '../../../contracts/build/src/gamedeposit.js';
+import { UInt64 } from 'o1js';
 
 export default function Home() {
   const [amount, setAmount] = useState(0);
+  const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
   useEffect(() => {
     (async () => {
       const { Mina, PublicKey } = await import('o1js');
@@ -17,16 +20,22 @@ export default function Home() {
       // Update this to use the address (public key) for your zkApp account.
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
       // Testnet B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA.
-      const zkAppAddress = 'B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA';
+      const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
       // This should be removed once the zkAppAddress is updated.
       if (!zkAppAddress) {
         console.error(
           'The following error is caused because the zkAppAddress has an empty string as the public key. Update the zkAppAddress with the public key for your zkApp account, or try this address for an example "Add" smart contract that we deployed to Testnet: B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA'
         );
       }
-      const zkApp = new GameDeposit()
+      const zkLoad = new GameDeposit(PublicKey.fromBase58(zkAppAddress));
+      setZkApp(zkLoad);
     })();
   }, []);
+
+  const deposit = async () => {
+    let amountMina = amount * 10 ** 9;
+    zkApp?.deposit(new UInt64(amountMina));
+  }
 
   return (
     <>
