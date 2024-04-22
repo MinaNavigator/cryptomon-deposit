@@ -18,6 +18,12 @@ export default function Home() {
       const { Mina, PublicKey } = await import('o1js');
       const { Add, GameDeposit } = await import('../../../contracts/build/src/');
 
+      const devnet = Mina.Network(
+        'https://proxy.devney.minaexplorer.com/graphql'
+      );
+      console.log('Devnet Instance Created');
+      Mina.setActiveInstance(devnet);
+
       // Update this to use the address (public key) for your zkApp account.
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
       // Testnet B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA.
@@ -54,7 +60,6 @@ export default function Home() {
       console.log("tx", tx);
 
       await tx.prove();
-      await tx.sign([key]).send();
 
       const { hash } = await window?.mina?.sendTransaction({
         transaction: tx.toJSON(),
