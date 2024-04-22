@@ -6,13 +6,13 @@ import { Mina, NetworkId, PrivateKey } from 'o1js';
 import { GameContract, GameDeposit } from './index.js';
 
 // check command line arg
-let deployAlias = process.argv[2];
+/*let deployAlias = process.argv[2];
 if (!deployAlias)
     throw Error(`Missing <deployAlias> argument.
 
 Usage:
 node build/src/interact.js <deployAlias>
-`);
+`);*/
 Error.stackTraceLimit = 1000;
 const DEFAULT_NETWORK_ID = 'testnet';
 
@@ -31,7 +31,8 @@ type Config = {
     >;
 };
 let configJson: Config = JSON.parse(await fs.readFile('config.json', 'utf8'));
-let config = configJson.deployAliases[deployAlias];
+let config = configJson.deployAliases["game"];
+let config2 = configJson.deployAliases["deposit"];
 let feepayerKeysBase58: { privateKey: string; publicKey: string } = JSON.parse(
     await fs.readFile(config.feepayerKeyPath, 'utf8')
 );
@@ -40,9 +41,14 @@ let zkAppKeysBase58: { privateKey: string; publicKey: string } = JSON.parse(
     await fs.readFile(config.keyPath, 'utf8')
 );
 
+let zkDeposiAppKeysBase58: { privateKey: string; publicKey: string } = JSON.parse(
+    await fs.readFile(config2.keyPath, 'utf8')
+);
+
+
 let feepayerKey = PrivateKey.fromBase58(feepayerKeysBase58.privateKey);
 let zkAppGameContractPrivateKey = PrivateKey.fromBase58(zkAppKeysBase58.privateKey);
-let zkAppGameDepositPrivateKey = PrivateKey.fromBase58(zkAppKeysBase58.privateKey);
+let zkAppGameDepositPrivateKey = PrivateKey.fromBase58(zkDeposiAppKeysBase58.privateKey);
 
 // set up Mina instance and contract we interact with
 const Network = Mina.Network({
@@ -71,10 +77,8 @@ try {
     let tx = await Mina.transaction(
         { sender: feepayerAddress, fee },
         async () => {
-            zkAppGameDeposit.setOwner(feepayerAddress);
+            zkAppGameDeposit.setContractAddress(zkAppGameContractAddress);
             zkAppGameDeposit.requireSignature();
-            zkAppGameContract.setOwner(feepayerAddress);
-            zkAppGameContract.requireSignature();
         }
     );
     await tx.prove();
