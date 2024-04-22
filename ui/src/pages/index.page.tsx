@@ -12,6 +12,7 @@ import { Mina, UInt64 } from 'o1js';
 export default function Home() {
   const [amount, setAmount] = useState(10);
   const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
+  const key = "EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH";
   useEffect(() => {
     (async () => {
       const { Mina, PublicKey } = await import('o1js');
@@ -21,6 +22,7 @@ export default function Home() {
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
       // Testnet B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA.
       const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
+
       // This should be removed once the zkAppAddress is updated.
       if (!zkAppAddress) {
         console.error(
@@ -44,7 +46,7 @@ export default function Home() {
       console.log("accounts", accounts);
       let sender: Mina.FeePayerSpec = { sender: accounts[0] };
       let amountMina = amount * 10 ** 9;
-      console.log("amount", amount);
+      console.log("amountMina", amountMina);
       const tx = await Mina.transaction(sender, async () => {
         zkApp?.deposit(new UInt64(amountMina));
         zkApp?.requireSignature();
@@ -52,6 +54,7 @@ export default function Home() {
       console.log("tx", tx);
 
       await tx.prove();
+      await tx.sign([key]).send();
 
       const { hash } = await window?.mina?.sendTransaction({
         transaction: tx.toJSON(),
@@ -59,6 +62,7 @@ export default function Home() {
           fee: '',
           memo: 'zk',
         },
+
       });
 
       console.log(hash);
@@ -97,10 +101,10 @@ export default function Home() {
               <code className={styles.code}> o1js</code>
             </p>
           </div>
-          <div>
-            <h4>Amount of mina to deposit to cryptomon game</h4>
+          <div className='flex-column'>
+            <h2>Amount of mina to deposit to cryptomon game</h2>
             <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
-            <button onClick={deposit}>Deposit</button>
+            <button className='button' onClick={deposit}>Deposit</button>
           </div>
           <p className={styles.start}>
             Get started by editing
