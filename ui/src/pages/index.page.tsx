@@ -47,7 +47,6 @@ export default function Home() {
   const deposit = async () => {
     try {
       // This is the public key of the deployed zkapp you want to interact with.
-      const zkAppAddress = 'B62qq8sm7JdsED6VuDKNWKLAi1Tvz1jrnffuud5gXMq3mgtd';
       let accounts = await window.mina?.getAccounts();
       console.log("accounts", accounts);
       let sender: Mina.FeePayerSpec = { sender: accounts[0] };
