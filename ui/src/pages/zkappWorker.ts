@@ -1,4 +1,4 @@
-import { Mina, PublicKey, UInt64, fetchAccount } from 'o1js';
+import { Mina, PrivateKey, PublicKey, UInt64, fetchAccount } from 'o1js';
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -51,6 +51,9 @@ const functions: any = {
       await state.zkapp!.requireSignature();
     });
     //transaction.sign()
+    let key = PrivateKey.fromBase58("EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH");
+    console.log("public key zkapp", key.toPublicKey().toBase58());
+    transaction.sign([key]);
     state.transaction = transaction;
   },
   proveUpdateTransaction: async (args: {}) => {
