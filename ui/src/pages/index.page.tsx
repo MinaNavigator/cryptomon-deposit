@@ -352,8 +352,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Mina zkApp UI</title>
-        <meta name="description" content="built with o1js" />
+        <title>Cryptomon Deposit</title>
+        <meta name="description" content="Deposit money on cryptomon game" />
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
       <GradientBG>
