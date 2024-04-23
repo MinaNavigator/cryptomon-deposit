@@ -38,6 +38,9 @@ export default function Home() {
       await window?.mina?.requestAccounts();
 
       const zkLoad = new GameDeposit(PublicKey.fromBase58(zkAppAddress));
+      // console.log("*** compiling ***");
+      // await GameDeposit.compile();
+      // console.log("*** end compiling ***");
       setZkApp(zkLoad);
 
 
@@ -51,9 +54,10 @@ export default function Home() {
       console.log("accounts", accounts);
       let sender: Mina.FeePayerSpec = { sender: accounts[0] };
       let amountMina = amount * 10 ** 9;
-      console.log("amountMina", amountMina);
+      const amountSend: UInt64 = UInt64.from(amountMina);
+      console.log("amountMina", amountSend.toJSON());
       const tx = await Mina.transaction(sender, async () => {
-        zkApp?.deposit(new UInt64(amountMina));
+        zkApp?.deposit(amountSend);
         zkApp?.requireSignature();
       });
       console.log("tx", tx);
@@ -63,8 +67,7 @@ export default function Home() {
       const { hash } = await window?.mina?.sendTransaction({
         transaction: tx.toJSON(),
         feePayer: {
-          fee: '',
-          memo: 'zk',
+          fee: '0.1',
         },
 
       });
