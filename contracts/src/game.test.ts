@@ -1,5 +1,5 @@
-import { GameDeposit, DepositData } from './gamedeposit.js';
-import { GameContract, WithdrawData } from './gamecontract.js';
+import { GameDeposit, DepositData } from './gamedeposit';
+import { GameContract, WithdrawData } from './gamecontract';
 import { Field, Mina, PrivateKey, PublicKey, AccountUpdate, UInt64, Account, assert } from 'o1js';
 
 /*
@@ -184,8 +184,8 @@ describe('Game', () => {
 
   async function deposit(amount: UInt64) {
     const txn3 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameDeposit.deposit(amount);
-      zkAppGameDeposit.requireSignature();
+      await zkAppGameDeposit.deposit(amount);
+      await zkAppGameDeposit.requireSignature();
     });
     await txn3.prove();
     await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
