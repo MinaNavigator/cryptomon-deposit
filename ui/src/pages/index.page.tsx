@@ -67,7 +67,7 @@ export default function Home() {
       const { hash } = await window?.mina?.sendTransaction({
         transaction: tx.toJSON(),
         feePayer: {
-          fee: '0.1',
+          fee: 0.1,
         },
 
       });
