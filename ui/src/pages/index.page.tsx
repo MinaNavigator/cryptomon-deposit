@@ -1,33 +1,29 @@
 
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
 import { GameDeposit } from '../../../contracts/build/src/gamedeposit.js';
-import { Mina, UInt64 } from 'o1js';
+import { Mina, UInt64, fetchAccount } from 'o1js';
 
 export default function Home() {
   const [amount, setAmount] = useState(10);
   const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
   const key = "EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH";
+  const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
   useEffect(() => {
     (async () => {
       const { Mina, PublicKey } = await import('o1js');
       const { Add, GameDeposit } = await import('../../../contracts/build/src/');
 
       const devnet = Mina.Network(
-        'https://proxy.devney.minaexplorer.com/graphql'
+        'https://proxy.devnet.minaexplorer.com/graphql'
       );
       console.log('Devnet Instance Created');
       Mina.setActiveInstance(devnet);
-
-      // Update this to use the address (public key) for your zkApp account.
-      // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
-      // Testnet B62qkwohsqTBPsvhYE8cPZSpzJMgoKn4i1LQRuBAtVXWpaT4dgH6WoA.
-      const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
 
       // This should be removed once the zkAppAddress is updated.
       if (!zkAppAddress) {
@@ -49,10 +45,18 @@ export default function Home() {
 
   const deposit = async () => {
     try {
+      const devnet = Mina.Network(
+        'https://proxy.devnet.minaexplorer.com/graphql'
+      );
+      console.log('Devnet Instance Created');
+      Mina.setActiveInstance(devnet);
+      const res = await fetchAccount({ publicKey: zkAppAddress });
+      const owner = await zkApp?.Owner.get();
+      console.log("owner", owner);
       // This is the public key of the deployed zkapp you want to interact with.
       let accounts = await window.mina?.getAccounts();
       console.log("accounts", accounts);
-      let sender: Mina.FeePayerSpec = { sender: accounts[0] };
+      let sender: Mina.FeePayerSpec = { sender: accounts[0], fee: 100000000, memo: '' };
       let amountMina = amount * 10 ** 9;
       const amountSend: UInt64 = UInt64.from(amountMina);
       console.log("amountMina", amountSend.toJSON());
@@ -61,13 +65,13 @@ export default function Home() {
         zkApp?.requireSignature();
       });
       console.log("tx", tx);
-
       await tx.prove();
-
+      console.log("proved");
       const { hash } = await window?.mina?.sendTransaction({
         transaction: tx.toJSON(),
         feePayer: {
-          fee: 0.1,
+          fee: "",
+          memo: ""
         },
 
       });
