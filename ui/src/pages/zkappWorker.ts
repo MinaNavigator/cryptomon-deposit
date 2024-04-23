@@ -25,7 +25,7 @@ const functions: any = {
   },
   loadContract: async (args: {}) => {
     const { GameDeposit } = await import('../../../contracts/build/src/gamedeposit.js');
-    state.GameDeposit = GameDeposit;
+    state.GameDeposit = GameDeposit as unknown as any;
   },
   compileContract: async (args: {}) => {
     await state.GameDeposit!.compile();
@@ -39,14 +39,18 @@ const functions: any = {
     state.zkapp = new state.GameDeposit!(publicKey);
   },
   getOwner: async (args: {}) => {
-    const currentNum = await state.zkapp!.Owner.get();
-    return JSON.stringify(currentNum.toJSON());
+    console.log("getOwner worker");
+    const currentOwner = await state.zkapp!.Owner.get();
+    return JSON.stringify(currentOwner.toJSON());
   },
-  createUpdateTransaction: async (args: { amountJson: string }) => {
+  createUpdateTransaction: async (args: { amountJson: string, sender: string }) => {
     const amount64 = UInt64.fromJSON(args.amountJson);
-    const transaction = await Mina.transaction(async () => {
+    console.log("amount", amount64);
+    const transaction = await Mina.transaction(PublicKey.fromJSON(args.sender), async () => {
       await state.zkapp!.deposit(amount64);
+      //await state.zkapp!.requireSignature();
     });
+    //transaction.sign()
     state.transaction = transaction;
   },
   proveUpdateTransaction: async (args: {}) => {

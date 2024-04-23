@@ -39,13 +39,13 @@ export default class ZkappWorkerClient {
     });
   }
 
-  async getOwner(): Promise<Field> {
+  async getOwner(): Promise<PublicKey> {
     const result = await this._call('getOwner', {});
-    return Field.fromJSON(JSON.parse(result as string));
+    return PublicKey.fromJSON(JSON.parse(result as string));
   }
 
-  createUpdateTransaction(amountJson: string) {
-    return this._call('createUpdateTransaction', { amountJson });
+  createUpdateTransaction(amountJson: string, sender: string) {
+    return this._call('createUpdateTransaction', { amountJson, sender });
   }
 
   proveUpdateTransaction() {

@@ -15,13 +15,14 @@ export default function Home() {
   const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
   const key = "EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH";
   const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
+  let transactionFee = 0.1;
 
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
     hasWallet: null as null | boolean,
     hasBeenSetup: false,
     accountExists: false,
-    currentOwner: null as null | Field,
+    currentOwner: null as null | PublicKey,
     publicKey: null as null | PublicKey,
     zkappPublicKey: null as null | PublicKey,
     creatingTransaction: false
@@ -35,8 +36,12 @@ export default function Home() {
 
   useEffect(() => {
     async function timeout(seconds: number): Promise<void> {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, seconds * 1000);
+      });
     }
-
     (async () => {
       if (!state.hasBeenSetup) {
         setDisplayText('Loading web worker...');
@@ -128,38 +133,48 @@ export default function Home() {
 
   const deposit = async () => {
     try {
-      const devnet = Mina.Network(
-        'https://proxy.devnet.minaexplorer.com/graphql'
-      );
-      console.log('Devnet Instance Created');
-      Mina.setActiveInstance(devnet);
-      const res = await fetchAccount({ publicKey: zkAppAddress });
-      const owner = await zkApp?.Owner.get();
-      console.log("owner", owner);
-      // This is the public key of the deployed zkapp you want to interact with.
-      let accounts = await window.mina?.getAccounts();
-      console.log("accounts", accounts);
-      let sender: Mina.FeePayerSpec = { sender: accounts[0], fee: 100000000, memo: '' };
+
       let amountMina = amount * 10 ** 9;
       const amountSend: UInt64 = UInt64.from(amountMina);
-      console.log("amountMina", amountSend.toJSON());
-      const tx = await Mina.transaction(sender, async () => {
-        zkApp?.deposit(amountSend);
-        zkApp?.requireSignature();
-      });
-      console.log("tx", tx);
-      await tx.prove();
-      console.log("proved");
-      const { hash } = await window?.mina?.sendTransaction({
-        transaction: tx.toJSON(),
+
+      setState({ ...state, creatingTransaction: true });
+
+      setDisplayText('Creating a transaction...');
+      console.log('Creating a transaction...');
+
+      await state.zkappWorkerClient!.createUpdateTransaction(amountSend.toJSON(), state.publicKey?.toJSON());
+
+      setDisplayText('Creating proof...');
+      console.log('Creating proof...');
+      await state.zkappWorkerClient!.proveUpdateTransaction();
+
+      console.log('Requesting send transaction...');
+      setDisplayText('Requesting send transaction...');
+      const transactionJSON = await state.zkappWorkerClient!.getTransactionJSON();
+
+      setDisplayText('Getting transaction JSON...');
+      console.log('Getting transaction JSON...');
+
+      /*  const signResult = await (window as any).mina
+          ?.signMessage(transactionJSON
+          )
+          .catch((err: any) => err);*/
+
+      const { hash } = await (window as any).mina.sendTransaction({
+        transaction: transactionJSON,
         feePayer: {
-          fee: "",
-          memo: ""
-        },
-
+          fee: transactionFee,
+          memo: ''
+        }
       });
 
-      console.log(hash);
+      const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+      console.log(`View transaction at ${transactionLink}`);
+
+      setTransactionLink(transactionLink);
+      setDisplayText(transactionLink);
+
+      setState({ ...state, creatingTransaction: false });
     } catch (err) {
       // You may want to show the error message in your UI to the user if the transaction fails.
       console.log(err?.message);
@@ -215,143 +230,141 @@ export default function Home() {
   let mainContent;
   if (state.hasBeenSetup && state.accountExists) {
     mainContent = (
-      <>
-        <Head>
-          <title>Mina zkApp UI</title>
-          <meta name="description" content="built with o1js" />
-          <link rel="icon" href="/assets/favicon.ico" />
-        </Head>
-        <GradientBG>
-          <main className={styles.main}>
-            <div className={styles.center}>
-              <a
-                href="https://minaprotocol.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+      <main className={styles.main}>
+        <div className={styles.center}>
+          <a
+            href="https://minaprotocol.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              className={styles.logo}
+              src={heroMinaLogo}
+              alt="Mina Logo"
+              width="191"
+              height="174"
+              priority
+            />
+          </a>
+          <p className={styles.tagline}>
+            built with
+            <code className={styles.code}> o1js</code>
+          </p>
+          <p>
+            {displayText}
+          </p>
+        </div>
+        <div className='flex-column'>
+          <h2>Amount of mina to deposit to cryptomon game</h2>
+          <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
+          <button className='button' onClick={deposit}>Deposit</button>
+        </div>
+        <p className={styles.start}>
+          Get started by editing
+          <code className={styles.code}> src/pages/index.js</code> or <code className={styles.code}> src/pages/index.tsx</code>
+        </p>
+        <div className={styles.grid}>
+          <a
+            href="https://docs.minaprotocol.com/zkapps"
+            className={styles.card}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h2>
+              <span>DOCS</span>
+              <div>
                 <Image
-                  className={styles.logo}
-                  src={heroMinaLogo}
+                  src={arrowRightSmall}
                   alt="Mina Logo"
-                  width="191"
-                  height="174"
+                  width={16}
+                  height={16}
                   priority
                 />
-              </a>
-              <p className={styles.tagline}>
-                built with
-                <code className={styles.code}> o1js</code>
-              </p>
-              <p>
-                {displayText}
-              </p>
-            </div>
-            <div className='flex-column'>
-              <h2>Amount of mina to deposit to cryptomon game</h2>
-              <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
-              <button className='button' onClick={deposit}>Deposit</button>
-            </div>
-            <p className={styles.start}>
-              Get started by editing
-              <code className={styles.code}> src/pages/index.js</code> or <code className={styles.code}> src/pages/index.tsx</code>
-            </p>
-            <div className={styles.grid}>
-              <a
-                href="https://docs.minaprotocol.com/zkapps"
-                className={styles.card}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <h2>
-                  <span>DOCS</span>
-                  <div>
-                    <Image
-                      src={arrowRightSmall}
-                      alt="Mina Logo"
-                      width={16}
-                      height={16}
-                      priority
-                    />
-                  </div>
-                </h2>
-                <p>Explore zkApps, how to build one, and in-depth references</p>
-              </a>
-              <a
-                href="https://docs.minaprotocol.com/zkapps/tutorials/hello-world"
-                className={styles.card}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <h2>
-                  <span>TUTORIALS</span>
-                  <div>
-                    <Image
-                      src={arrowRightSmall}
-                      alt="Mina Logo"
-                      width={16}
-                      height={16}
-                      priority
-                    />
-                  </div>
-                </h2>
-                <p>Learn with step-by-step o1js tutorials</p>
-              </a>
-              <a
-                href="https://discord.gg/minaprotocol"
-                className={styles.card}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <h2>
-                  <span>QUESTIONS</span>
-                  <div>
-                    <Image
-                      src={arrowRightSmall}
-                      alt="Mina Logo"
-                      width={16}
-                      height={16}
-                      priority
-                    />
-                  </div>
-                </h2>
-                <p>Ask questions on our Discord server</p>
-              </a>
-              <a
-                href="https://docs.minaprotocol.com/zkapps/how-to-deploy-a-zkapp"
-                className={styles.card}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <h2>
-                  <span>DEPLOY</span>
-                  <div>
-                    <Image
-                      src={arrowRightSmall}
-                      alt="Mina Logo"
-                      width={16}
-                      height={16}
-                      priority
-                    />
-                  </div>
-                </h2>
-                <p>Deploy a zkApp to Testnet</p>
-              </a>
-            </div>
-          </main>
-        </GradientBG>
-      </>
+              </div>
+            </h2>
+            <p>Explore zkApps, how to build one, and in-depth references</p>
+          </a>
+          <a
+            href="https://docs.minaprotocol.com/zkapps/tutorials/hello-world"
+            className={styles.card}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h2>
+              <span>TUTORIALS</span>
+              <div>
+                <Image
+                  src={arrowRightSmall}
+                  alt="Mina Logo"
+                  width={16}
+                  height={16}
+                  priority
+                />
+              </div>
+            </h2>
+            <p>Learn with step-by-step o1js tutorials</p>
+          </a>
+          <a
+            href="https://discord.gg/minaprotocol"
+            className={styles.card}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h2>
+              <span>QUESTIONS</span>
+              <div>
+                <Image
+                  src={arrowRightSmall}
+                  alt="Mina Logo"
+                  width={16}
+                  height={16}
+                  priority
+                />
+              </div>
+            </h2>
+            <p>Ask questions on our Discord server</p>
+          </a>
+          <a
+            href="https://docs.minaprotocol.com/zkapps/how-to-deploy-a-zkapp"
+            className={styles.card}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h2>
+              <span>DEPLOY</span>
+              <div>
+                <Image
+                  src={arrowRightSmall}
+                  alt="Mina Logo"
+                  width={16}
+                  height={16}
+                  priority
+                />
+              </div>
+            </h2>
+            <p>Deploy a zkApp to Testnet</p>
+          </a>
+        </div>
+      </main>
     );
   }
 
   return (
-    <GradientBG>
-      <div className={styles.main} style={{ padding: 0 }}>
-        <div className={styles.center} style={{ padding: 0 }}>
-          {setup}
-          {accountDoesNotExist}
-          {mainContent}
+    <>
+      <Head>
+        <title>Mina zkApp UI</title>
+        <meta name="description" content="built with o1js" />
+        <link rel="icon" href="/assets/favicon.ico" />
+      </Head>
+      <GradientBG>
+        <div className={styles.main} style={{ padding: 0 }}>
+          <div className={styles.center} style={{ padding: 0 }}>
+            {setup}
+            {accountDoesNotExist}
+            {mainContent}
+          </div>
         </div>
-      </div>
-    </GradientBG>
+      </GradientBG>
+    </>
   );
 }
