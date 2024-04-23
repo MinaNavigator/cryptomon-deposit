@@ -9,8 +9,9 @@ import type {
 export default class ZkappWorkerClient {
   // ---------------------------------------------------------------------------------------
 
-  setActiveInstanceToBerkeley() {
-    return this._call('setActiveInstanceToBerkeley', {});
+  setActiveInstanceToDevnet() {
+    console.log("setActiveInstanceToDevnet");
+    return this._call('setActiveInstanceToDevnet', {});
   }
 
   loadContract() {
@@ -38,13 +39,13 @@ export default class ZkappWorkerClient {
     });
   }
 
-  async getNum(): Promise<Field> {
-    const result = await this._call('getNum', {});
+  async getOwner(): Promise<Field> {
+    const result = await this._call('getOwner', {});
     return Field.fromJSON(JSON.parse(result as string));
   }
 
-  createUpdateTransaction() {
-    return this._call('createUpdateTransaction', {});
+  createUpdateTransaction(amountJson: string) {
+    return this._call('createUpdateTransaction', { amountJson });
   }
 
   proveUpdateTransaction() {

@@ -14,8 +14,9 @@ const state = {
 
 // ---------------------------------------------------------------------------------------
 
-const functions = {
-  setActiveInstanceToBerkeley: async (args: {}) => {
+const functions: any = {
+  setActiveInstanceToDevnet: async (args: {}) => {
+    console.log("worker setActiveInstanceToDevnet");
     const Devnet = Mina.Network(
       'https://proxy.devnet.minaexplorer.com/graphql'
     );
@@ -41,9 +42,10 @@ const functions = {
     const currentNum = await state.zkapp!.Owner.get();
     return JSON.stringify(currentNum.toJSON());
   },
-  createUpdateTransaction: async (args: { amount: UInt64 }) => {
+  createUpdateTransaction: async (args: { amountJson: string }) => {
+    const amount64 = UInt64.fromJSON(args.amountJson);
     const transaction = await Mina.transaction(async () => {
-      await state.zkapp!.deposit(args.amount);
+      await state.zkapp!.deposit(amount64);
     });
     state.transaction = transaction;
   },
@@ -74,6 +76,7 @@ if (typeof window !== 'undefined') {
   addEventListener(
     'message',
     async (event: MessageEvent<ZkappWorkerRequest>) => {
+      console.log("message received", event.data);
       const returnData = await functions[event.data.fn](event.data.args);
 
       const message: ZkappWorkerReponse = {
