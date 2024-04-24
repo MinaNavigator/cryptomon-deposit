@@ -57,6 +57,8 @@ export class GameManager extends SmartContract {
       editActionState: Permissions.proofOrSignature(),
       send: Permissions.proofOrSignature()
     });
+
+    this.Owner.set(this.sender.getUnconstrained());
   }
 
   /** Owner right to update owner or contract address receiver */

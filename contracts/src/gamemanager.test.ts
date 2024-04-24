@@ -58,25 +58,32 @@ describe('GameManager', () => {
     expect(num2).toEqual(zero);
   });
 
-  it('define owner game contract', async () => {
+  it('define new owner game contract', async () => {
     await localDeploy();
 
     const oldOwner = zkAppGameContract.Owner.get();
-    expect(oldOwner).toEqual(PublicKey.empty());
+    expect(oldOwner.toBase58()).toEqual(deployerAccount.toBase58());
     await setGameContractOwner();
 
     const newOwner = zkAppGameContract.Owner.getAndRequireEquals();
-    // console.log("newOwner", newOwner.toBase58());
-    // console.log("deployerAccount", deployerAccount.toBase58());
-    // console.log("emptyaccount", PublicKey.empty().toBase58());
-    expect(newOwner.toBase58()).toEqual(deployerAccount.toBase58());
+    expect(newOwner.toBase58()).toEqual(senderAccount.toBase58());
+  });
+
+  it('no right for set owner', async () => {
+    await localDeploy();
+
+    await expect(async () => {
+      const txn = await Mina.transaction(senderAccount, async () => {
+        await zkAppGameContract.setOwner(senderAccount);
+      });
+      await txn.prove();
+      await txn.sign([senderKey]).send();
+    }).rejects.toThrow();
   });
 
 
   it('make a deposit', async () => {
     await localDeploy();
-
-    await setGameContractOwner();
 
     const mina = new UInt64(10 ** 9);
     await deposit(mina);
@@ -87,8 +94,6 @@ describe('GameManager', () => {
 
   it('make a withdraw', async () => {
     await localDeploy();
-
-    await setGameContractOwner();
 
     const mina = new UInt64(10 ** 9);
     await deposit(mina);
@@ -109,8 +114,6 @@ describe('GameManager', () => {
 
   it('can not make a withdraw', async () => {
     await localDeploy();
-
-    await setGameContractOwner();
 
     const mina = new UInt64(10 ** 9);
     await deposit(mina);
@@ -144,7 +147,7 @@ describe('GameManager', () => {
 
   async function setGameContractOwner() {
     const txn = await Mina.transaction(deployerAccount, async () => {
-      await zkAppGameContract.setOwner(deployerAccount);
+      await zkAppGameContract.setOwner(senderAccount);
     });
     await txn.prove();
     await txn.sign([deployerKey]).send();

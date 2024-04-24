@@ -18,6 +18,15 @@
       "feepayerAlias": "eddy",
       "fee": "0.1",
       "smartContract": "GameDeposit"
+    },
+    "manager": {
+      "networkId": "testnet",
+      "url": "https://proxy.devnet.minaexplorer.com/graphql",
+      "keyPath": "keys/manager.json",
+      "feepayerKeyPath": "C:\\Users\\EddyB/.cache/zkapp-cli/keys/eke2nzh8rnlvxnkp8j3vuenyd2u3hnyhxz4cwes6yxacsjnkuco8.json",
+      "feepayerAlias": "eke2nzh8rnlvxnkp8j3vuenyd2u3hnyhxz4cwes6yxacsjnkuco8",
+      "fee": "0.1",
+      "smartContract": "GameManager"
     }
   }
 }

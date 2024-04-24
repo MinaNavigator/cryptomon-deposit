@@ -1,4 +1,1 @@
-Game contract address on devnet : B62qmUqJBynGN9mazSN9AnikiiHLDKut7hM7Ba143eyWbrAXdkK8jb4
-
-Game deposit address on devnet :
-B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j
+Game manager address on devnet : B62qqLQJc7Qzb73vqFWeR3FvJznRrNpH5rMtWE9NRDab7p5ZCTajqPm

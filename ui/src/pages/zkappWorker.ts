@@ -4,11 +4,11 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { GameDeposit } from '../../../contracts/src/gamedeposit';
+import type { GameManager } from '../../../contracts/src/gamemanager';
 
 const state = {
-  GameDeposit: null as null | typeof GameDeposit,
-  zkapp: null as null | GameDeposit,
+  GameManager: null as null | typeof GameManager,
+  zkapp: null as null | GameManager,
   transaction: null as null | Transaction,
 };
 
@@ -24,11 +24,11 @@ const functions: any = {
     Mina.setActiveInstance(Devnet);
   },
   loadContract: async (args: {}) => {
-    const { GameDeposit } = await import('../../../contracts/build/src/gamedeposit.js');
-    state.GameDeposit = GameDeposit as unknown as any;
+    const { GameManager } = await import('../../../contracts/build/src/gamemanager.js');
+    state.GameManager = GameManager as unknown as any;
   },
   compileContract: async (args: {}) => {
-    await state.GameDeposit!.compile();
+    await state.GameManager!.compile();
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -36,7 +36,7 @@ const functions: any = {
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    state.zkapp = new state.GameDeposit!(publicKey);
+    state.zkapp = new state.GameManager!(publicKey);
   },
   getOwner: async (args: {}) => {
     console.log("getOwner worker");
