@@ -54,7 +54,8 @@ export class GameManager extends SmartContract {
     this.account.permissions.set({
       ...Permissions.default(),
       editState: Permissions.proofOrSignature(),
-      editActionState: Permissions.proofOrSignature()
+      editActionState: Permissions.proofOrSignature(),
+      send: Permissions.proofOrSignature()
     });
   }
 
