@@ -48,12 +48,7 @@ const functions: any = {
     console.log("amount", amount64);
     const transaction = await Mina.transaction(PublicKey.fromJSON(args.sender), async () => {
       await state.zkapp!.deposit(amount64);
-      await state.zkapp!.requireSignature();
     });
-    //transaction.sign()
-    let key = PrivateKey.fromBase58("EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH");
-    console.log("public key zkapp", key.toPublicKey().toBase58());
-    transaction.sign([key]);
     state.transaction = transaction;
   },
   proveUpdateTransaction: async (args: {}) => {

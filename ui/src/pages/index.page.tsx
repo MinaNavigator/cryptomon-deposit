@@ -13,8 +13,7 @@ import ZkappWorkerClient from './zkappWorkerClient';
 export default function Home() {
   const [amount, setAmount] = useState(10);
   const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
-  const key = "EKEXqZYRThBdeELB3QLoyFbAZis4R8TtzrFxu1buq4YiDA5a3EAH";
-  const zkAppAddress = 'B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j';
+  const zkAppAddress = 'B62qqLQJc7Qzb73vqFWeR3FvJznRrNpH5rMtWE9NRDab7p5ZCTajqPm';
   let transactionFee = 0.1;
 
   const [state, setState] = useState({
