@@ -23,7 +23,8 @@
     "lint": "npx eslint src/* --fix",
     "setowner": "node build/src/setowner.js",
     "setownergame": "node build/src/setownergame.js",
-    "setgamecontract": "node build/src/setgamecontract.js"
+    "setgamecontract": "node build/src/setgamecontract.js",
+    "update": "node build/src/update.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
