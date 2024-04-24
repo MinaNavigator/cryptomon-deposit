@@ -88,6 +88,8 @@ export default function Home() {
         console.log('Getting zkApp state...');
         setDisplayText('Getting zkApp state...');
         await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
+        const testOwner = await zkApp?.Owner.get();
+        console.log("testOwner", testOwner?.toBase58());
         const currentOwner = await zkappWorkerClient.getOwner();
         console.log(`Current owner state in zkApp: ${currentOwner.toString()}`);
         setDisplayText('');

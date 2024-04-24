@@ -12,6 +12,8 @@ Mina.setActiveInstance(Devnet);
 // contract account
 const contractAccount = "B62qkDkxHaeFWybkEJjjUNY46J1mthaFcPtvRndgWtAiZdPxMMb7JJ2";
 const contract = new GameManager(PublicKey.fromBase58(contractAccount));
+const publicKey = PublicKey.fromBase58(contractAccount);
+await fetchAccount({ publicKey });
 
 const owner = contract.Owner.get();
 
