@@ -50,7 +50,7 @@ export class GameDeposit extends SmartContract {
 
     this.account.permissions.set({
       ...Permissions.default(),
-      editState: Permissions.proofOrSignature(),
+      editState: Permissions.signature(),
     });
   }
 
@@ -82,7 +82,7 @@ export class GameDeposit extends SmartContract {
     // can't deposit 0
     amount.greaterThan(UInt64.zero).assertTrue();
 
-    let senderPublicKey = this.sender.getUnconstrained();
+    let senderPublicKey = this.sender.getAndRequireSignature();
     let senderUpdate = AccountUpdate.createSigned(senderPublicKey);
     const contractAddress = this.GameContract.getAndRequireEquals();
     // don't send is the contract is not defined

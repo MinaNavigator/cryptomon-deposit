@@ -188,6 +188,6 @@ describe('Game', () => {
       await zkAppGameDeposit.requireSignature();
     });
     await txn3.prove();
-    await txn3.sign([deployerKey]).send();
+    await txn3.sign([deployerKey, zkAppGameDepositPrivateKey]).send();
   }
 });
