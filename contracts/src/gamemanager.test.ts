@@ -100,7 +100,7 @@ describe('GameManager', () => {
       await zkAppGameContract.requireSignature();
     });
     await txn4.prove();
-    await txn4.sign([deployerKey, senderKey, zkAppGameContractPrivateKey]).send();
+    await txn4.sign([deployerKey, zkAppGameContractPrivateKey]).send();
     const balanceAfter = Mina.getBalance(senderAccount);
 
     // check if sender account receive 1 mina after withdraw
