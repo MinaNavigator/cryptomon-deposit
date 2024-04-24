@@ -97,16 +97,34 @@ describe('GameManager', () => {
     const balanceBefore = Mina.getBalance(senderAccount);
     const txn4 = await Mina.transaction(deployerAccount, async () => {
       await zkAppGameContract.withdraw(mina, senderAccount, new UInt64(1));
-      await zkAppGameContract.requireSignature();
     });
     await txn4.prove();
-    await txn4.sign([deployerKey, zkAppGameContractPrivateKey]).send();
+    await txn4.sign([deployerKey]).send();
     const balanceAfter = Mina.getBalance(senderAccount);
 
     // check if sender account receive 1 mina after withdraw
     const bal = balanceAfter.sub(balanceBefore);
     expect(bal).toEqual(mina);
   });
+
+  it('can not make a withdraw', async () => {
+    await localDeploy();
+
+    await setGameContractOwner();
+
+    const mina = new UInt64(10 ** 9);
+    await deposit(mina);
+
+    await expect(async () => {
+      const txn4 = await Mina.transaction(senderAccount, async () => {
+        await zkAppGameContract.withdraw(mina, senderAccount, new UInt64(1));
+      });
+      await txn4.prove();
+      // the sender is not the owner so it can't call withdraw function
+      await txn4.sign([senderKey]).send();
+    }).rejects.toThrow();
+  });
+
 
   it('make two deposit', async () => {
     await localDeploy();
@@ -127,16 +145,14 @@ describe('GameManager', () => {
   async function setGameContractOwner() {
     const txn = await Mina.transaction(deployerAccount, async () => {
       await zkAppGameContract.setOwner(deployerAccount);
-      await zkAppGameContract.requireSignature();
     });
     await txn.prove();
-    await txn.sign([deployerKey, zkAppGameContractPrivateKey]).send();
+    await txn.sign([deployerKey]).send();
   }
 
   async function deposit(amount: UInt64) {
     const txn3 = await Mina.transaction(deployerAccount, async () => {
       await zkAppGameContract.deposit(amount);
-      //await zkAppGameContract.requireSignature();
     });
     await txn3.prove();
     await txn3.sign([deployerKey]).send();
