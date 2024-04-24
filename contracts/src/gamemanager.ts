@@ -54,6 +54,7 @@ export class GameManager extends SmartContract {
     this.account.permissions.set({
       ...Permissions.default(),
       editState: Permissions.proofOrSignature(),
+      editActionState: Permissions.proofOrSignature()
     });
   }
 
@@ -77,10 +78,13 @@ export class GameManager extends SmartContract {
     // can't deposit 0
     amount.greaterThan(UInt64.zero).assertTrue();
 
-    let senderPublicKey = this.sender.getAndRequireSignature();
     const owner = this.Owner.getAndRequireEquals();
     // don't send if the owner is not defined
     owner.isEmpty().assertFalse();
+
+    let senderPublicKey = this.sender.getUnconstrained();
+    let senderUpdate = AccountUpdate.createSigned(senderPublicKey);
+    senderUpdate.send({ to: this, amount });
 
     const actualId = this.DepositId.getAndRequireEquals();
     const newId = actualId.add(1);

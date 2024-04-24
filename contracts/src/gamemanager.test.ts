@@ -41,7 +41,7 @@ describe('GameManager', () => {
 
   async function localDeploy() {
     const txn = await Mina.transaction(deployerAccount, async () => {
-      AccountUpdate.fundNewAccount(deployerAccount);
+      await AccountUpdate.fundNewAccount(deployerAccount);
       await zkAppGameContract.deploy();
     });
     await txn.prove();
@@ -66,7 +66,10 @@ describe('GameManager', () => {
     await setGameContractOwner();
 
     const newOwner = zkAppGameContract.Owner.getAndRequireEquals();
-    expect(newOwner).toEqual(deployerAccount);
+    // console.log("newOwner", newOwner.toBase58());
+    // console.log("deployerAccount", deployerAccount.toBase58());
+    // console.log("emptyaccount", PublicKey.empty().toBase58());
+    expect(newOwner.toBase58()).toEqual(deployerAccount.toBase58());
   });
 
 
@@ -93,8 +96,8 @@ describe('GameManager', () => {
 
     const balanceBefore = Mina.getBalance(senderAccount);
     const txn4 = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameContract.withdraw(mina, senderAccount, new UInt64(1));
-      zkAppGameContract.requireSignature();
+      await zkAppGameContract.withdraw(mina, senderAccount, new UInt64(1));
+      await zkAppGameContract.requireSignature();
     });
     await txn4.prove();
     await txn4.sign([deployerKey, senderKey, zkAppGameContractPrivateKey]).send();
@@ -123,8 +126,8 @@ describe('GameManager', () => {
 
   async function setGameContractOwner() {
     const txn = await Mina.transaction(deployerAccount, async () => {
-      zkAppGameContract.setOwner(deployerAccount);
-      zkAppGameContract.requireSignature();
+      await zkAppGameContract.setOwner(deployerAccount);
+      await zkAppGameContract.requireSignature();
     });
     await txn.prove();
     await txn.sign([deployerKey, zkAppGameContractPrivateKey]).send();
@@ -133,9 +136,9 @@ describe('GameManager', () => {
   async function deposit(amount: UInt64) {
     const txn3 = await Mina.transaction(deployerAccount, async () => {
       await zkAppGameContract.deposit(amount);
-      await zkAppGameContract.requireSignature();
+      //await zkAppGameContract.requireSignature();
     });
     await txn3.prove();
-    await txn3.sign([deployerKey, zkAppGameContractPrivateKey]).send();
+    await txn3.sign([deployerKey]).send();
   }
 });
