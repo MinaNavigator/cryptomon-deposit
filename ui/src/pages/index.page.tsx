@@ -4,18 +4,17 @@ import Image from 'next/image';
 import { memo, useEffect, useState } from 'react';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
+import { PublicKey, UInt64, fetchAccount } from 'o1js';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
-import { GameDeposit } from '../../../contracts/build/src/gamedeposit.js';
-import { Field, Mina, PublicKey, UInt64, fetchAccount } from 'o1js';
+import { GameManager } from '../../../contracts/build/src/gamemanager.js';
 import ZkappWorkerClient from './zkappWorkerClient';
 
 export default function Home() {
   const [amount, setAmount] = useState(10);
-  const [zkApp, setZkApp] = useState<GameDeposit | null>(null);
+  const [zkApp, setZkApp] = useState<GameManager | null>(null);
   const zkAppAddress = 'B62qkDkxHaeFWybkEJjjUNY46J1mthaFcPtvRndgWtAiZdPxMMb7JJ2';
   let transactionFee = 0.1;
-
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
     hasWallet: null as null | boolean,
@@ -101,7 +100,7 @@ export default function Home() {
           publicKey,
           zkappPublicKey,
           accountExists,
-          currentOwner
+          currentOwner: null
         });
       }
     })();
@@ -174,7 +173,7 @@ export default function Home() {
       setDisplayText(transactionLink);
 
       setState({ ...state, creatingTransaction: false });
-    } catch (err) {
+    } catch (err: any) {
       // You may want to show the error message in your UI to the user if the transaction fails.
       console.log(err?.message);
     }

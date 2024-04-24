@@ -21,10 +21,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "npx eslint src/* --fix",
-    "setowner": "node build/src/setowner.js",
-    "setownergame": "node build/src/setownergame.js",
-    "setgamecontract": "node build/src/setgamecontract.js",
-    "update": "node build/src/update.js"
+    "setowner": "node build/src/setOwner.js",
+    "update": "node build/src/update.js",
+    "start": "node build/src/run.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
