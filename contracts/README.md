@@ -41,8 +41,4 @@ npm run coverage
 [Apache-2.0](LICENSE)
 
 
-Game contract address : B62qmUqJBynGN9mazSN9AnikiiHLDKut7hM7Ba143eyWbrAXdkK8jb4
-
-Game deposit address : B62qk5nz4hw6H1gssUqaD88uJcsynU71a7vsUaqx738yscCZxu7Kb2j
-
-Game manager address : B62qqLQJc7Qzb73vqFWeR3FvJznRrNpH5rMtWE9NRDab7p5ZCTajqPm
+Game manager address : B62qkDkxHaeFWybkEJjjUNY46J1mthaFcPtvRndgWtAiZdPxMMb7JJ2
