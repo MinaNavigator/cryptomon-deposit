@@ -15,6 +15,6 @@ const contract = new GameManager(PublicKey.fromBase58(contractAccount));
 const publicKey = PublicKey.fromBase58(contractAccount);
 await fetchAccount({ publicKey });
 
-const owner = contract.Owner.get();
+const owner = await contract.Owner.get();
 
 console.log("owner", owner?.toBase58());
