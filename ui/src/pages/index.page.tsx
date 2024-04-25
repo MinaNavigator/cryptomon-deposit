@@ -152,11 +152,6 @@ export default function Home() {
       setDisplayText('Getting transaction JSON...');
       console.log('Getting transaction JSON...');
 
-      /*  const signResult = await (window as any).mina
-          ?.signMessage(transactionJSON
-          )
-          .catch((err: any) => err);*/
-
       const { hash } = await (window as any).mina.sendTransaction({
         transaction: transactionJSON,
         feePayer: {
