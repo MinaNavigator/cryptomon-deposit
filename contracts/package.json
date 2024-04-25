@@ -23,7 +23,8 @@
     "lint": "npx eslint src/* --fix",
     "setowner": "node build/src/setOwner.js",
     "update": "node build/src/update.js",
-    "start": "node build/src/run.js"
+    "start": "node build/src/run.js",
+    "deposit": "node build/src/deposit.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",

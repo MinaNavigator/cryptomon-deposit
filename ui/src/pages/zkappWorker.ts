@@ -47,7 +47,7 @@ const functions: any = {
   createUpdateTransaction: async (args: { amountJson: string, sender: string }) => {
     const amount64 = UInt64.fromJSON(args.amountJson);
     console.log("amount", amount64);
-    const transaction = await Mina.transaction(PublicKey.fromJSON(args.sender), async () => {
+    const transaction = await Mina.transaction({ sender: PublicKey.fromJSON(args.sender) }, async () => {
       await state.zkapp!.deposit(amount64);
     });
     state.transaction = transaction;
