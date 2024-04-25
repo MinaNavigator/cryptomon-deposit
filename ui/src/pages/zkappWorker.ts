@@ -41,6 +41,7 @@ const functions: any = {
   getOwner: async (args: {}) => {
     console.log("getOwner worker");
     const currentOwner = await state.zkapp!.Owner.get();
+    console.log("currentOwner", currentOwner.toBase58());
     return JSON.stringify(currentOwner!.toJSON());
   },
   createUpdateTransaction: async (args: { amountJson: string, sender: string }) => {

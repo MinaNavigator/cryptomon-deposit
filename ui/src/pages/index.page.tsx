@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { memo, useEffect, useState } from 'react';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
-import { PublicKey, UInt64, fetchAccount } from 'o1js';
+import { Mina, PublicKey, UInt64, fetchAccount } from 'o1js';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
 import { GameManager } from '../../../contracts/build/src/gamemanager.js';
@@ -88,10 +88,7 @@ export default function Home() {
         console.log('Getting zkApp state...');
         setDisplayText('Getting zkApp state...');
         await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
-        const testOwner = await zkApp?.Owner.get();
-        console.log("testOwner", testOwner?.toBase58());
-        const currentOwner = await zkappWorkerClient.getOwner();
-        console.log(`Current owner state in zkApp: ${currentOwner.toString()}`);
+        state.currentOwner = await zkappWorkerClient.getOwner();
         setDisplayText('');
 
         setState({
