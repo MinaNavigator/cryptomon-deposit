@@ -29,11 +29,11 @@ describe('GameManager', () => {
     const Local = await Mina.LocalBlockchain({ proofsEnabled });
     Mina.setActiveInstance(Local);
     let accountOne = Local.testAccounts[0];
-    deployerKey = accountOne.key;
-    deployerAccount = accountOne;
+    deployerKey = accountOne.privateKey;
+    deployerAccount = accountOne.publicKey;
     let accountTwo = Local.testAccounts[1];
-    senderKey = accountTwo.key;
-    senderAccount = accountTwo;
+    senderKey = accountTwo.privateKey;
+    senderAccount = accountTwo.publicKey;
     zkAppGameContractPrivateKey = PrivateKey.random();
     zkAppGameContractAddress = zkAppGameContractPrivateKey.toPublicKey();
     zkAppGameContract = new GameManager(zkAppGameContractAddress);

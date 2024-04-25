@@ -41,4 +41,4 @@ npm run coverage
 [Apache-2.0](LICENSE)
 
 
-Game manager address : B62qkDkxHaeFWybkEJjjUNY46J1mthaFcPtvRndgWtAiZdPxMMb7JJ2
+Game manager address : B62qrRrikoeHWeyhacPKxtWfVcpeaG6AgZp4qdFjo2D7qDVbwWZ1YQZ

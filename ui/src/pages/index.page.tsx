@@ -13,7 +13,7 @@ import ZkappWorkerClient from './zkappWorkerClient';
 export default function Home() {
   const [amount, setAmount] = useState(10);
   const [zkApp, setZkApp] = useState<GameManager | null>(null);
-  const zkAppAddress = 'B62qkDkxHaeFWybkEJjjUNY46J1mthaFcPtvRndgWtAiZdPxMMb7JJ2';
+  const zkAppAddress = 'B62qrRrikoeHWeyhacPKxtWfVcpeaG6AgZp4qdFjo2D7qDVbwWZ1YQZ';
   let transactionFee = 0.1;
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
@@ -168,7 +168,7 @@ export default function Home() {
         }
       });
 
-      const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+      const transactionLink = `https://devnet.minaexplorer.com/transaction/${hash}`;
       console.log(`View transaction at ${transactionLink}`);
 
       setTransactionLink(transactionLink);
