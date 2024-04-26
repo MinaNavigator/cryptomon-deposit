@@ -23,7 +23,8 @@ export default function Home() {
     currentOwner: null as null | PublicKey,
     publicKey: null as null | PublicKey,
     zkappPublicKey: null as null | PublicKey,
-    creatingTransaction: false
+    creatingTransaction: false,
+    network: null
   });
 
   const [displayText, setDisplayText] = useState('');
@@ -62,6 +63,8 @@ export default function Home() {
         const publicKeyBase58: string = (await mina.requestAccounts())[0];
         const publicKey = PublicKey.fromBase58(publicKeyBase58);
 
+        const network = await mina.requestNetwork();
+
         console.log(`Using key:${publicKey.toBase58()}`);
         setDisplayText(`Using key:${publicKey.toBase58()}`);
 
@@ -99,7 +102,8 @@ export default function Home() {
           publicKey,
           zkappPublicKey,
           accountExists,
-          currentOwner: null
+          currentOwner: null,
+          network
         });
       }
     })();
@@ -236,12 +240,14 @@ export default function Home() {
     return state.publicKey?.toBase58().substring(0, 10) + "..." + state.publicKey?.toBase58().slice(-10);
   };
 
-  const connected = (<div>
-    <span>🟢</span> <span title={state.publicKey?.toBase58()}>{getAddress()}</span>
-  </div>);
+  const connected = (<div className='flex-column'>
+    <div style={{ marginBottom: 0 }}><span>🟢</span> <span title={state.publicKey?.toBase58()}>{getAddress()}</span></div>
+    <div>{state.network?.name}</div>
+  </div >);
 
   const disconnected = (<div>
-    <span>🔴</span> <span>Not connected</span>
+    <div><span>🔴</span> <span>Not connected</span></div>
+    <div></div>
   </div>);
 
   return (
