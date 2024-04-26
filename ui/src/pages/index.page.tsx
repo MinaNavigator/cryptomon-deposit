@@ -222,36 +222,13 @@ export default function Home() {
   let mainContent;
   if (state.hasBeenSetup && state.accountExists) {
     mainContent = (
-      <main className={styles.main}>
-        <div className={styles.center}>
-          <a
-            href="https://minaprotocol.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src={heroMinaLogo}
-              alt="Mina Logo"
-              width="191"
-              height="174"
-              priority
-            />
-          </a>
-          <p className={styles.tagline}>
-            built with
-            <code className={styles.code}> o1js</code>
-          </p>
-          <p>
-            {displayText}
-          </p>
-        </div>
+      <>
         <div className='flex-column'>
           <h2>Amount of mina to deposit to cryptomon game</h2>
           <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
           <button className='button' onClick={deposit}>Deposit</button>
         </div>
-      </main>
+      </>
     );
   }
 
@@ -280,14 +257,34 @@ export default function Home() {
             <div>{state.publicKey ? connected : disconnected}</div>
           </div>
         </header>
-        <div className={styles.main} style={{ padding: 0 }}>
-          <div className={styles.center} style={{ padding: 0 }}>
-            {setup}
-            {accountDoesNotExist}
-            {mainContent}
+        <div className={styles.main} >
+          <div className={styles.center}>
+            <a
+              href="https://minaprotocol.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                className={styles.logo}
+                src={heroMinaLogo}
+                alt="Mina Logo"
+                width="191"
+                height="174"
+                priority
+              />
+            </a>
+            <p className={styles.tagline}>
+              built with
+              <code className={styles.code}> o1js</code>
+            </p>
+            <div className={styles.center} style={{ marginTop: "20px" }}>
+              {accountDoesNotExist}
+              {mainContent}
+              {setup}
+            </div>
           </div>
         </div>
-      </GradientBG>
+      </GradientBG >
     </>
   );
 }
