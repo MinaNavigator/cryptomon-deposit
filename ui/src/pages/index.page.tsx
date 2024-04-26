@@ -64,6 +64,7 @@ export default function Home() {
         const publicKey = PublicKey.fromBase58(publicKeyBase58);
 
         const network = await mina.requestNetwork();
+        console.log("network", network);
 
         console.log(`Using key:${publicKey.toBase58()}`);
         setDisplayText(`Using key:${publicKey.toBase58()}`);
@@ -242,7 +243,7 @@ export default function Home() {
 
   const connected = (<div className='flex-column'>
     <div style={{ marginBottom: 0 }}><span>🟢</span> <span title={state.publicKey?.toBase58()}>{getAddress()}</span></div>
-    <div>{state.network?.name}</div>
+    <div>{state.network?.name.toLowerCase() != "devnet" ? "Wrong network choose Devnet" : "Devnet"}</div>
   </div >);
 
   const disconnected = (<div>
