@@ -341,6 +341,18 @@ export default function Home() {
     );
   }
 
+  const getAddress = () => {
+    return state.publicKey?.toBase58().substring(0, 10) + "..." + state.publicKey?.toBase58().slice(-10);
+  };
+
+  const connected = (<div>
+    <span>🟢</span> <span title={state.publicKey?.toBase58()}>{getAddress()}</span>
+  </div>);
+
+  const disconnected = (<div>
+    <span>🔴</span> <span>Not connected</span>
+  </div>);
+
   return (
     <>
       <Head>
@@ -349,6 +361,11 @@ export default function Home() {
         <link rel="icon" href="/assets/favicon.ico" />
       </Head>
       <GradientBG>
+        <header>
+          <div className='flex-row' style={{ justifyContent: 'flex-end', padding: '10px', cursor: 'pointer' }}>
+            <div>{state.publicKey ? connected : disconnected}</div>
+          </div>
+        </header>
         <div className={styles.main} style={{ padding: 0 }}>
           <div className={styles.center} style={{ padding: 0 }}>
             {setup}
