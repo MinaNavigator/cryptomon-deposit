@@ -7,7 +7,7 @@ import styles from '../styles/Home.module.css';
 import { Mina, PublicKey, UInt64, fetchAccount } from 'o1js';
 import heroMinaLogo from '../../public/assets/hero-mina-logo.svg';
 import arrowRightSmall from '../../public/assets/arrow-right-small.svg';
-import { GameManager } from '../../../contracts/build/src/gamemanager.js';
+import { GameManager } from '../../contracts/src/gamemanager';
 import ZkappWorkerClient from './zkappWorkerClient';
 
 export default function Home() {

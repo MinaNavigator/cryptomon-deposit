@@ -4,7 +4,7 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { GameManager } from '../../../contracts/src/gamemanager';
+import type { GameManager } from '../../contracts/src/gamemanager';
 
 const state = {
   GameManager: null as null | typeof GameManager,
@@ -24,7 +24,7 @@ const functions: any = {
     Mina.setActiveInstance(Devnet);
   },
   loadContract: async (args: {}) => {
-    const { GameManager } = await import('../../../contracts/build/src/gamemanager.js');
+    const { GameManager } = await import('../../contracts/src/gamemanager');
     state.GameManager = GameManager as unknown as any;
   },
   compileContract: async (args: {}) => {
