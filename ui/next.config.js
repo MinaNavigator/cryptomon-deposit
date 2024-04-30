@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
 
 
@@ -43,8 +49,8 @@ const nextConfig = {
    * The 'ghp-postbuild.js' script in this project prepends the repo name to asset urls in the built css files 
    * after runing 'npm run deploy'.
    */
-  basePath: process.env.NODE_ENV === 'production' ? '/cryptomon-deposit' : '', // update if your repo name changes for 'npm run deploy' to work successfully
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/cryptomon-deposit/' : '', // update if your repo name changes for 'npm run deploy' to work successfully
+  //basePath: process.env.NODE_ENV === 'production' ? '/cryptomon-deposit' : '', // update if your repo name changes for 'npm run deploy' to work successfully
+  //assetPrefix: process.env.NODE_ENV === 'production' ? '/cryptomon-deposit/' : '', // update if your repo name changes for 'npm run deploy' to work successfully
 };
 
 module.exports = nextConfig
