@@ -232,6 +232,7 @@ export default function Home() {
           <h2>Amount of mina to deposit to cryptomon game</h2>
           <input className='input' placeholder='amount in mina to deposit' type='number' onChange={(event) => setAmount(parseFloat(event.target.value))} value={amount}></input>
           <button className='button' onClick={deposit}>Deposit</button>
+          <span>You will receive {amount * 2} $ in game</span>
         </div>
       </>
     );
